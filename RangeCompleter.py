@@ -47,7 +47,7 @@ def CSV_ToGDB_Table(table, workingGDB, outName):
 def Study_Area_Clipper(ClipAreaFile, FileToClip, outGDB, outName):
     # Clips an input fc to a study area to test the logic of the script
     # Takes the TestAreaFile and clips the FileToClip to its area
-    print 'Clipping file to study area'
+    print('Clipping file to study area')
     OutFC = os.path.join(outGDB, outName)
     arcpy.Clip_analysis(FileToClip, ClipAreaFile, OutFC)
     return OutFC
@@ -59,9 +59,9 @@ def fc_to_csv_writer(fc, outDirectory, csv_name, field_list, null_value= -999):
     fields = [f.name for f in arcpy.ListFields(fc)]
     for f in field_list:
         if f not in fields:
-            print f + ' Not in the feature class'
+            print (f + ' not in the feature class')
             sys.exit()
-    print 'Exporting fc to csv'
+    print('Exporting fc to csv')
     with open(os.path.join(outDirectory, csv_name), 'wb') as f:
         writer = csv.writer(f, encoding= 'utf-8')
         writer.writerow(field_list)
@@ -123,7 +123,7 @@ def AddressCleaner(AddressDataCSV, outDirectory, outGDB, out_name, outCSV_Name =
             AddressName += outsegment + item
         df.at[row[0], 'Street_Name'] = AddressName
     
-    print 'Exporting cleaned address data'
+    print('Exporting cleaned address data')
     df.drop(columns='OBJECTID')
     df.to_csv(os.path.join(outDirectory, outCSV_Name), index=False)  
     XY_Layer = arcpy.MakeXYEventLayer_management(os.path.join(outDirectory, outCSV_Name), 'LON', 'LAT', 'XY_Points')
@@ -131,12 +131,12 @@ def AddressCleaner(AddressDataCSV, outDirectory, outGDB, out_name, outCSV_Name =
     return os.path.join(outGDB, out_name) 
 
 def RangeMaker(NGD_A, AddressPoints, workingGDB, outTableName):
-    print 'Joining NGD_A with addresses'
+    print('Joining NGD_A with addresses')
     AddWith_NGD_A = ''
     if arcpy.Exists(os.path.join(workingGDB, 'Address_NGD_A_sj')) is False:
         AddWith_NGD_A = arcpy.SpatialJoin_analysis(AddressPoints,  NGD_A, os.path.join(workingGDB, 'Address_NGD_A_sj'))
     AddWith_NGD_A = os.path.join(workingGDB, 'Address_NGD_A_sj')
-    print 'Calculating Statistics'
+    print('Calculating Statistics')
     # finds the min and max for each 
     arcpy.Statistics_analysis(AddWith_NGD_A, os.path.join(workingGDB, outTableName), statistics_fields= [['NUMBER_INT', 'MIN'], ['NUMBER_INT', 'MAX']], 
                                             case_field= ['BB_UID','Street_Name'])
@@ -269,4 +269,4 @@ AddressRanges_CSV = os.path.join(outDirectory, 'torontoIO_MinMax.csv')
 Cleaned_Area_Addresses_CSV = os.path.join(outDirectory, 'CleanedAreaAddresses.csv')
 IncompleteRangeFlagger(AddressRanges_CSV, NGD_AL_All_CSV, Cleaned_Area_Addresses_CSV, 'L', outDirectory)
 
-print 'DONE!'
+print('DONE!')
